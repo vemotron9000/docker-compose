@@ -1,0 +1,38 @@
+services:
+
+  mysql:
+    restart: unless-stopped
+    image: mysql:8.0
+    hostname: mysql
+    volumes:
+      - semaphore_mysql:/var/lib/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: semaphore
+      MYSQL_USER: semaphore
+      MYSQL_PASSWORD: semaphore
+      
+  semaphore:
+        ports:
+            - 3069:3000
+        image: semaphoreui/semaphore:latest
+        environment:
+            SEMAPHORE_DB_USER: semaphore
+            SEMAPHORE_DB_PASS: semaphore
+            SEMAPHORE_DB_HOST: mysql # for postgres, change to: postgres
+            SEMAPHORE_DB_PORT: 3306 # change to 5432 for postgres
+            SEMAPHORE_DB_DIALECT: mysql # for postgres, change to: postgres
+            SEMAPHORE_DB: semaphore
+            SEMAPHORE_ADMIN: admin
+            SEMAPHORE_ADMIN_PASSWORD: changeme
+            SEMAPHORE_ADMIN_NAME: Admin
+            SEMAPHORE_ADMIN_EMAIL: admin@localhost
+        volumes:
+            - semaphore_data:/var/lib/semaphore
+            - semaphore_config:/etc/semaphore
+            - semaphore_tmp:/tmp/semaphore
+volumes:
+    semaphore_data:
+    semaphore_config:
+    semaphore_tmp:
+    semaphore_mysql:
